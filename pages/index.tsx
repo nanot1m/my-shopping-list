@@ -28,7 +28,7 @@ list
 
 const Home: NextPage = observer(() => {
 	return (
-		<Flex flexDirection="column" background={"#fafafa"} height="100vh">
+		<Flex flexDirection="column" background={"#fafafa"}>
 			<Head>
 				<title>My Shopping List</title>
 				<meta name="description" content="Shopping list app" />
