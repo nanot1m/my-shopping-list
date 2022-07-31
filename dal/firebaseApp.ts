@@ -66,7 +66,12 @@ export async function getShoppingList(listId: string) {
 				shoppingList.addShoppingListItem(item)
 			}
 			if (change.type === "modified") {
-				console.log("Modified item: ", change.doc.id, change.doc.data())
+				const data = change.doc.data()
+				shoppingList.updateShoppingListItem(
+					change.doc.id,
+					data.title,
+					data.category,
+				)
 			}
 			if (change.type === "removed") {
 				shoppingList.removeShoppingListItemById(change.doc.id)

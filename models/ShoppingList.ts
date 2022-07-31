@@ -15,6 +15,18 @@ export class ShoppingList {
 		return this
 	}
 
+	updateShoppingListItem(
+		itemId: string,
+		title: string,
+		category: string | null,
+	) {
+		const item = this.items.find((item) => item.id === itemId)
+		if (item) {
+			item.setTitle(title)
+			item.setCategory(category)
+		}
+	}
+
 	removeShoppingListItemById(itemId: string) {
 		const idx = this.items.findIndex((x) => x.id === itemId)
 		if (idx > -1) {

@@ -7,17 +7,17 @@ export class ShoppingListItem {
 	category: string | null
 
 	constructor(id: string, title: string = "", category: string | null = null) {
-		makeAutoObservable(this)
 		this.id = id
 		this.title = title
 		this.category = category
+		makeAutoObservable(this)
 	}
 
 	setTitle(title: string) {
 		this.title = title
 	}
 
-	setCategory(category: string) {
+	setCategory(category: string | null) {
 		this.category = category
 	}
 }

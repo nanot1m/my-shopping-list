@@ -6,6 +6,7 @@ import {
 	deleteShoppingListItem,
 	updateShoppingListItem,
 } from "../dal/firebaseApp"
+import type { FormEvent } from "react"
 
 export const ShoppingListItemComponent = observer(
 	(props: { item: ShoppingListItem }) => {
@@ -14,7 +15,9 @@ export const ShoppingListItemComponent = observer(
 			editFieldFocus: "",
 			title: props.item.title,
 			category: props.item.category,
-			submitEdit() {
+			submitEdit(e: FormEvent) {
+				e.preventDefault()
+
 				const title = this.title.trim()
 				const category = this.category?.trim() || null
 				updateShoppingListItem(props.item.id, {
@@ -40,53 +43,55 @@ export const ShoppingListItemComponent = observer(
 		}))
 
 		return (
-			<Flex alignItems="center" gap={2}>
-				{model.isEditing ? (
-					<Input
-						autoFocus={model.editFieldFocus === "title"}
-						value={model.title}
-						onChange={(e) => model.setTitle(e.target.value)}
-						placeholder="Title"
-					/>
-				) : (
-					<Box flex={1} onPointerUp={model.toggleEditTitle}>
-						{props.item.title || "Untitled"}
-					</Box>
-				)}
-
-				{model.isEditing ? (
-					<Input
-						autoFocus={model.editFieldFocus === "category"}
-						value={model.category ?? ""}
-						onChange={(e) => model.setCategory(e.target.value)}
-						placeholder="Category"
-					/>
-				) : props.item.category ? (
-					<Badge
-						onPointerUp={model.toggleEditCategory}
-						variant={"subtle"}
-						fontSize="x-small"
-						colorScheme={"green"}
-					>
-						{props.item.category}
-					</Badge>
-				) : null}
-				<Flex py={2}>
+			<form onSubmit={model.submitEdit}>
+				<Flex alignItems="center" gap={2}>
 					{model.isEditing ? (
-						<IconButton
-							aria-label={"Submit"}
-							icon={<CheckIcon />}
-							onClick={model.submitEdit}
+						<Input
+							autoFocus={model.editFieldFocus === "title"}
+							value={model.title}
+							onChange={(e) => model.setTitle(e.target.value)}
+							placeholder="Title"
 						/>
 					) : (
-						<IconButton
-							aria-label={"Delete"}
-							icon={<DeleteIcon />}
-							onClick={() => deleteShoppingListItem(props.item.id)}
-						/>
+						<Box flex={1} onPointerUp={model.toggleEditTitle}>
+							{props.item.title || "Untitled"}
+						</Box>
 					)}
+
+					{model.isEditing ? (
+						<Input
+							autoFocus={model.editFieldFocus === "category"}
+							value={model.category ?? ""}
+							onChange={(e) => model.setCategory(e.target.value)}
+							placeholder="Category"
+						/>
+					) : props.item.category ? (
+						<Badge
+							onPointerUp={model.toggleEditCategory}
+							variant={"subtle"}
+							fontSize="x-small"
+							colorScheme={"green"}
+						>
+							{props.item.category}
+						</Badge>
+					) : null}
+					<Flex py={2}>
+						{model.isEditing ? (
+							<IconButton
+								aria-label={"Submit"}
+								icon={<CheckIcon />}
+								type="submit"
+							/>
+						) : (
+							<IconButton
+								aria-label={"Delete"}
+								icon={<DeleteIcon />}
+								onClick={() => deleteShoppingListItem(props.item.id)}
+							/>
+						)}
+					</Flex>
 				</Flex>
-			</Flex>
+			</form>
 		)
 	},
 )
