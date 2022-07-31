@@ -2,9 +2,8 @@ import { AddIcon } from "@chakra-ui/icons"
 import { Flex, IconButton, Input } from "@chakra-ui/react"
 import { observer } from "mobx-react-lite"
 import React, { useCallback } from "react"
+import { addShoppingListItem } from "../dal/firebaseApp"
 import { ShoppingList } from "../models/ShoppingList"
-import { ShoppingListItem } from "../models/ShoppingListItem"
-import { getId } from "../pages/index"
 
 export const NewItemForm = observer((props: { list: ShoppingList }) => {
 	const handleSubmit = useCallback(
@@ -14,12 +13,11 @@ export const NewItemForm = observer((props: { list: ShoppingList }) => {
 			const formData = new FormData(form)
 			const title = formData.get("title")?.toString()
 			if (title) {
-				const item = new ShoppingListItem(
-					getId(),
+				addShoppingListItem({
 					title,
-					formData.get("category")?.toString() ?? null,
-				)
-				props.list.addShoppingListItem(item)
+					category: formData.get("category")?.toString() ?? null,
+					shoppingListId: props.list.id,
+				})
 			}
 			form.reset()
 		},

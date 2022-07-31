@@ -15,10 +15,10 @@ export class ShoppingList {
 		return this
 	}
 
-	removeShoppingListItem(item: ShoppingListItem) {
-		const idx = this.items.indexOf(item)
+	removeShoppingListItemById(itemId: string) {
+		const idx = this.items.findIndex((x) => x.id === itemId)
 		if (idx > -1) {
-			this.items.splice(-1, 1)
+			this.items.splice(idx, 1)
 		}
 		return idx > -1
 	}

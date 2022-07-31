@@ -11,24 +11,30 @@ import {
 import { observer } from "mobx-react-lite"
 import type { NextPage } from "next"
 import Head from "next/head"
-import React from "react"
+import React, { useEffect, useState } from "react"
 import { ShoppingListItemComponent } from "../components/ShoppingListItemComponent"
 import { ShoppingList } from "../models/ShoppingList"
-import { ShoppingListItem } from "../models/ShoppingListItem"
 import { NewItemForm } from "../components/NewItemForm"
+import { getShoppingList } from "../dal/firebaseApp"
 
-const list = new ShoppingList("local")
-
-let id = 0
-export const getId = () => (id++).toString()
-
-list
-	.addShoppingListItem(new ShoppingListItem(getId(), "Хлеб", "Булошки"))
-	.addShoppingListItem(new ShoppingListItem(getId(), "Огурцы", "Фрукты/Овощи"))
+const listId = "v9r5CmHA3uudq9rMw37i"
 
 const Home: NextPage = observer(() => {
+	const [list, setList] = useState<ShoppingList | null>(null)
+
+	useEffect(() => {
+		let dispose = () => {}
+		getShoppingList(listId).then((res) => {
+			setList(res.shoppingList)
+			dispose = res.dispose
+		})
+		return () => {
+			dispose()
+		}
+	}, [])
+
 	return (
-		<Flex flexDirection="column" background={"#fafafa"}>
+		<Flex flexDirection="column" backgroundColor="#fafafa">
 			<Head>
 				<title>My Shopping List</title>
 				<meta name="description" content="Shopping list app" />
@@ -39,25 +45,25 @@ const Home: NextPage = observer(() => {
 				<Container>
 					<Heading mb={8}>my shopping list.</Heading>
 				</Container>
-				<Container px={2}>
-					<List
-						borderRadius="md"
-						backgroundColor="InfoBackground"
-						shadow={"base"}
-						px={2}
-					>
-						{list.items.map((item) => (
-							<ListItem key={item.id}>
-								<ShoppingListItemComponent
-									item={item}
-									onDelete={() => list.removeShoppingListItem(item)}
-								/>
-								<Divider />
-							</ListItem>
-						))}
-					</List>
-					<NewItemForm list={list} />
-				</Container>
+				{list && (
+					<Container px={2}>
+						<NewItemForm list={list} />
+						<List
+							borderRadius="md"
+							backgroundColor="InfoBackground"
+							shadow={"base"}
+							px={2}
+							mt={2}
+						>
+							{list.items.map((item) => (
+								<ListItem key={item.id}>
+									<ShoppingListItemComponent item={item} />
+									<Divider />
+								</ListItem>
+							))}
+						</List>
+					</Container>
+				)}
 			</Box>
 
 			<footer>

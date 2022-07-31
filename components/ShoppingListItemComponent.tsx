@@ -1,21 +1,34 @@
 import { Flex, Box, Badge, IconButton, Input } from "@chakra-ui/react"
-import { CheckIcon, DeleteIcon, EditIcon } from "@chakra-ui/icons"
+import { CheckIcon, DeleteIcon } from "@chakra-ui/icons"
 import { observer, useLocalObservable } from "mobx-react-lite"
 import { ShoppingListItem } from "../models/ShoppingListItem"
-import { runInAction } from "mobx"
+import {
+	deleteShoppingListItem,
+	updateShoppingListItem,
+} from "../dal/firebaseApp"
 
 export const ShoppingListItemComponent = observer(
-	(props: { item: ShoppingListItem; onDelete: () => void }) => {
+	(props: { item: ShoppingListItem }) => {
 		const model = useLocalObservable(() => ({
 			isEditing: false,
+			editFieldFocus: "",
 			title: props.item.title,
 			category: props.item.category,
 			submitEdit() {
-				props.item.title = this.title.trim()
-				props.item.category = this.category?.trim() || null
+				const title = this.title.trim()
+				const category = this.category?.trim() || null
+				updateShoppingListItem(props.item.id, {
+					title,
+					category,
+				})
 				this.isEditing = false
 			},
-			toggleEdit() {
+			toggleEditTitle() {
+				this.editFieldFocus = "title"
+				this.isEditing = true
+			},
+			toggleEditCategory() {
+				this.editFieldFocus = "category"
 				this.isEditing = true
 			},
 			setTitle(title: string) {
@@ -30,25 +43,27 @@ export const ShoppingListItemComponent = observer(
 			<Flex alignItems="center" gap={2}>
 				{model.isEditing ? (
 					<Input
+						autoFocus={model.editFieldFocus === "title"}
 						value={model.title}
 						onChange={(e) => model.setTitle(e.target.value)}
 						placeholder="Title"
 					/>
 				) : (
-					<Box flex={1} onPointerUp={model.toggleEdit}>
+					<Box flex={1} onPointerUp={model.toggleEditTitle}>
 						{props.item.title || "Untitled"}
 					</Box>
 				)}
 
 				{model.isEditing ? (
 					<Input
+						autoFocus={model.editFieldFocus === "category"}
 						value={model.category ?? ""}
 						onChange={(e) => model.setCategory(e.target.value)}
 						placeholder="Category"
 					/>
 				) : props.item.category ? (
 					<Badge
-						onPointerUp={model.toggleEdit}
+						onPointerUp={model.toggleEditCategory}
 						variant={"subtle"}
 						fontSize="x-small"
 						colorScheme={"green"}
@@ -67,7 +82,7 @@ export const ShoppingListItemComponent = observer(
 						<IconButton
 							aria-label={"Delete"}
 							icon={<DeleteIcon />}
-							onClick={props.onDelete}
+							onClick={() => deleteShoppingListItem(props.item.id)}
 						/>
 					)}
 				</Flex>
