@@ -5,6 +5,12 @@ export class ShoppingList {
 	readonly id: string
 	items: ShoppingListItem[] = []
 
+	get sortedItems() {
+		return this.items
+			.slice()
+			.sort((a, b) => (a.done === b.done ? 0 : a.done ? 1 : -1))
+	}
+
 	constructor(id: string) {
 		this.id = id
 		makeAutoObservable(this)
@@ -19,11 +25,13 @@ export class ShoppingList {
 		itemId: string,
 		title: string,
 		category: string | null,
+		done: boolean,
 	) {
 		const item = this.items.find((item) => item.id === itemId)
 		if (item) {
 			item.setTitle(title)
 			item.setCategory(category)
+			item.setDone(done)
 		}
 	}
 

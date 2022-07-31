@@ -44,8 +44,9 @@ const shoppingListItemCollection = collection(
 	"shopping-list-items",
 ) as CollectionReference<{
 	title: string
-	category: string
+	category: string | null
 	shoppingListId: string
+	done: boolean
 }>
 
 export async function getShoppingList(listId: string) {
@@ -62,6 +63,7 @@ export async function getShoppingList(listId: string) {
 					change.doc.id,
 					data.title,
 					data.category || null,
+					data.done,
 				)
 				shoppingList.addShoppingListItem(item)
 			}
@@ -71,6 +73,7 @@ export async function getShoppingList(listId: string) {
 					change.doc.id,
 					data.title,
 					data.category,
+					data.done,
 				)
 			}
 			if (change.type === "removed") {
@@ -98,12 +101,13 @@ export function addShoppingListItem(fields: {
 		title: fields.title,
 		category: fields.category,
 		shoppingListId: fields.shoppingListId,
+		done: false,
 	})
 }
 
 export function updateShoppingListItem(
 	itemId: string,
-	fields: Partial<{ title: string; category: string | null }>,
+	fields: Partial<{ title: string; category: string | null; done: boolean }>,
 ) {
 	return updateDoc(doc(shoppingListItemCollection, itemId), fields)
 }

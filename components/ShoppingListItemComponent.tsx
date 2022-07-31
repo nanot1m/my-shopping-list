@@ -1,4 +1,4 @@
-import { Flex, Box, Badge, IconButton, Input } from "@chakra-ui/react"
+import { Flex, Box, Badge, IconButton, Input, Checkbox } from "@chakra-ui/react"
 import { CheckIcon, DeleteIcon } from "@chakra-ui/icons"
 import { observer, useLocalObservable } from "mobx-react-lite"
 import { ShoppingListItem } from "../models/ShoppingListItem"
@@ -45,6 +45,18 @@ export const ShoppingListItemComponent = observer(
 		return (
 			<form onSubmit={model.submitEdit}>
 				<Flex alignItems="center" gap={2}>
+					{model.isEditing === false && (
+						<Checkbox
+							px={1}
+							size="lg"
+							isChecked={props.item.done}
+							onChange={(e) => {
+								updateShoppingListItem(props.item.id, {
+									done: e.target.checked,
+								})
+							}}
+						/>
+					)}
 					{model.isEditing ? (
 						<Input
 							autoFocus={model.editFieldFocus === "title"}
@@ -53,7 +65,12 @@ export const ShoppingListItemComponent = observer(
 							placeholder="Title"
 						/>
 					) : (
-						<Box flex={1} onPointerUp={model.toggleEditTitle}>
+						<Box
+							flex={1}
+							onPointerUp={model.toggleEditTitle}
+							textDecoration={props.item.done ? "line-through" : ""}
+							color={props.item.done ? "GrayText" : ""}
+						>
 							{props.item.title || "Untitled"}
 						</Box>
 					)}

@@ -5,11 +5,19 @@ export class ShoppingListItem {
 
 	title: string
 	category: string | null
+	done: boolean
 
-	constructor(id: string, title: string = "", category: string | null = null) {
+	constructor(
+		id: string,
+		title: string = "",
+		category: string | null = null,
+		done = false,
+	) {
 		this.id = id
 		this.title = title
 		this.category = category
+		this.done = done
+
 		makeAutoObservable(this)
 	}
 
@@ -19,5 +27,9 @@ export class ShoppingListItem {
 
 	setCategory(category: string | null) {
 		this.category = category
+	}
+
+	setDone(done: boolean) {
+		this.done = done
 	}
 }
